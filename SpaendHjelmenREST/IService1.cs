@@ -23,11 +23,6 @@ namespace SpaendHjelmenREST
         IList<Track> GetTracks();
 
 
-        [OperationContract]
-        [WebInvoke(Method = "GET",
-            ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "test/")]
-        string GetTest();
 
         #endregion
     }

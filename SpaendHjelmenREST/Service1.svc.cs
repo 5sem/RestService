@@ -37,10 +37,7 @@ namespace SpaendHjelmenREST
             }
         }
 
-        public string GetTest()
-        {
-            return "ok";
-        }
+
 
 
         private static Track ReadTrack(IDataRecord reader)
@@ -85,5 +82,6 @@ namespace SpaendHjelmenREST
             var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
             return connectionStringSettings.ConnectionString;
         }
+
     }
 }
