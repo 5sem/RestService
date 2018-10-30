@@ -12,8 +12,8 @@ namespace SpaendHjelmenREST
     [ServiceContract]
     public interface IService1
     {
-        //Track
-        #region
+        
+        #region Track
 
 
         [OperationContract]
