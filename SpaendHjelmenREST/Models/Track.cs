@@ -20,5 +20,15 @@ namespace SpaendHjelmenREST.Models
         public string ParkInfo { get; set; }
         public string Regional { get; set; }
 
+
+        public Track()
+        {
+
+        }
+
+        public Track(int id)
+        {
+            this.Id = id;
+        }
     }
 }

@@ -15,5 +15,14 @@ namespace SpaendHjelmenREST.Models
         public string ContactMessage { get; set; }
         public bool Privacy { get; set; }
 
+        public User()
+        {
+
+        }
+
+        public User(int id)
+        {
+            this.Id = id;
+        }
     }
 }
