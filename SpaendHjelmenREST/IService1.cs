@@ -21,9 +21,9 @@ namespace SpaendHjelmenREST
             Method = "GET",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "Tracks?fragment={fragmentName}"
+            UriTemplate = "Tracks"
             )]
-        IList<Track> GetTracks(string fragment = null);
+        IList<Track> GetTracks();
 
 
 

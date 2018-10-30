@@ -14,20 +14,25 @@ namespace SpaendHjelmenREST
 {
     public class Service1 : IService1
     {
-        public IList<Track> GetTracks(string fragment = null)
+        public IList<Track> GetTracks()
         {
-            string sqlString = "SELECT * FROM Tracks";
-            if (fragment != null)
-            {
-                sqlString = $"SELECT Name, PostalCode, City, Address FROM Tracks WHERE {fragment}";
-            }
+            const string sqlString = "SELECT * FROM Tracks";
 
             using(SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
                 sqlConnection.Open();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
                 {
-
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        var trackList = new List<Track>();
+                        while (reader.Read())
+                        {
+                            var track = ReadTrack(reader);
+                            trackList.Add(track);
+                        }
+                        return trackList;
+                    }
                 }
             }
         }
