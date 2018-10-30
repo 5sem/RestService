@@ -37,6 +37,12 @@ namespace SpaendHjelmenREST
             }
         }
 
+        public string GetTest()
+        {
+            return "ok";
+        }
+
+
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);

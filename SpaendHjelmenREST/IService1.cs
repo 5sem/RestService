@@ -17,15 +17,17 @@ namespace SpaendHjelmenREST
 
 
         [OperationContract]
-        [WebInvoke(
-            Method = "GET",
-            RequestFormat = WebMessageFormat.Json,
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "Tracks"
-            )]
+            UriTemplate = "tracks/")]
         IList<Track> GetTracks();
 
 
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "test/")]
+        string GetTest();
 
         #endregion
     }
