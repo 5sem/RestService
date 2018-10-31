@@ -67,7 +67,7 @@ namespace SpaendHjelmenREST
             t.PostalCode = PostalCode;
             t.City = City;
             t.Address = Address;
-            t.Colorcode = ColorCode;
+            t.ColorCode = ColorCode;
             t.Length = Lenght;
             t.MaxHeight = MaxHeight;
             t.ParkInfo = ParkInfo;

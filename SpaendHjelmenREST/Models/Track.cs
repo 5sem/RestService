@@ -16,7 +16,7 @@ namespace SpaendHjelmenREST.Models
         public virtual int PostalCode { get; set; }
         public virtual string City { get; set; }
         public virtual string Address { get; set; }
-        public virtual string Colorcode { get; set; }
+        public virtual string ColorCode { get; set; }
         public virtual double Length { get; set; }
         public virtual double MaxHeight { get; set; }
         public virtual string ParkInfo { get; set; }
