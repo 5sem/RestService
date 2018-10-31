@@ -7,8 +7,8 @@ namespace SpaendHjelmenREST.Models
 {
     public class Information
     {
-        public int Id { get; protected set; }
-        public string AppInfo { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string AppInfo { get; set; }
 
         public Information()
         {

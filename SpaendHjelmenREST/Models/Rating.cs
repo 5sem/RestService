@@ -8,9 +8,9 @@ namespace SpaendHjelmenREST.Models
 {
     public class Rating
     {
-        public int Id { get; protected set; }
-        public int UserId { get; set; }
-        public int TrackId { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int UserId { get; set; }
+        public virtual int TrackId { get; set; }
         [Range(1,5)]
         public int UserRating { get; set; }
 

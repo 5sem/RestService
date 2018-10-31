@@ -8,14 +8,14 @@ namespace SpaendHjelmenREST.Models
 {
     public class User
     {
-        public int Id { get; protected set; }
-        public string AuthToken { get; set; }
-        public string UserName { get; set; }
-        public byte Image { get; set; }
-        public int ContactNumber { get; set; }
-        public string ContactMessage { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string AuthToken { get; set; }
+        public virtual string UserName { get; set; }
+        public virtual byte Image { get; set; }
+        public virtual int ContactNumber { get; set; }
+        public virtual string ContactMessage { get; set; }
         [DefaultValue(false)]
-        public bool Privacy { get; set; }
+        public virtual bool Privacy { get; set; }
 
         public User()
         {

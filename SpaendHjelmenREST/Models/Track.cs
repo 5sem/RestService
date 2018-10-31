@@ -7,20 +7,20 @@ namespace SpaendHjelmenREST.Models
 {
     public class Track
     {
-        public int Id { get; protected set; }
-        public int PictureId { get; set; }
-        public string Name { get; set; }
-        public string Info { get; set; }
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
-        public int PostalCode { get; set; }
-        public string City { get; set; }
-        public string Address { get; set; }
-        public string Colorcode { get; set; }
-        public double Length { get; set; }
-        public double MaxHeight { get; set; }
-        public string ParkInfo { get; set; }
-        public string Regional { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int PictureId { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string Info { get; set; }
+        public virtual double Longitude { get; set; }
+        public virtual double Latitude { get; set; }
+        public virtual int PostalCode { get; set; }
+        public virtual string City { get; set; }
+        public virtual string Address { get; set; }
+        public virtual string Colorcode { get; set; }
+        public virtual double Length { get; set; }
+        public virtual double MaxHeight { get; set; }
+        public virtual string ParkInfo { get; set; }
+        public virtual string Regional { get; set; }
 
 
         public Track()

@@ -7,9 +7,9 @@ namespace SpaendHjelmenREST.Models
 {
     public class Picture
     {
-        public int Id { get; protected set; }
-        public string Name { get; set; }
-        public byte Image { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string Name { get; set; }
+        public virtual byte Image { get; set; }
 
         public Picture()
         {

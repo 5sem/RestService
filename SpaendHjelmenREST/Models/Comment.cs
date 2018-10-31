@@ -7,11 +7,11 @@ namespace SpaendHjelmenREST.Models
 {
     public class Comment
     {
-        public int Id { get; protected set; }
-        public int UserId { get; set; }
-        public int TrackId { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Edited { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int UserId { get; set; }
+        public virtual int TrackId { get; set; }
+        public virtual DateTime Created { get; set; }
+        public virtual DateTime Edited { get; set; }
 
 
         public Comment()

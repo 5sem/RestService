@@ -43,15 +43,15 @@ namespace SpaendHjelmenREST
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
-            //var PictureId = reader.GetInt32(1);
+            var PictureId = reader.GetInt32(1);
             var Name = reader.GetString(2);
             var Info = reader.GetString(3);
-            //var Longitude = reader.GetDouble(4);
-            //var Latitude = reader.GetDouble(5);
-            //var PostalCode = reader.GetInt32(6);
-            //var City = reader.GetString(7);
-            //var Address = reader.GetString(8);
-            //var ColorCode = reader.GetString(9);
+            var Longitude = reader.GetDouble(4);
+            var Latitude = reader.GetDouble(5);
+            var PostalCode = reader.GetInt32(6);
+            var City = reader.GetString(7);
+            var Address = reader.GetString(8);
+            var ColorCode = reader.GetString(9);
             var Lenght = reader.GetDouble(10);
             var MaxHeight = reader.GetDouble(11);
             var ParkInfo = reader.GetString(12);
@@ -59,15 +59,15 @@ namespace SpaendHjelmenREST
 
             Track t = new Track(Id);
 
-            //t.PictureId = PictureId;
+            t.PictureId = PictureId;
             t.Name = Name;
             t.Info = Info;
-            //t.Longitude = Longitude;
-            //t.Latitude = Latitude;
-            //t.PostalCode = PostalCode;
-            //t.City = City;
-            //t.Address = Address;
-            //t.Colorcode = ColorCode;
+            t.Longitude = Longitude;
+            t.Latitude = Latitude;
+            t.PostalCode = PostalCode;
+            t.City = City;
+            t.Address = Address;
+            t.Colorcode = ColorCode;
             t.Length = Lenght;
             t.MaxHeight = MaxHeight;
             t.ParkInfo = ParkInfo;
