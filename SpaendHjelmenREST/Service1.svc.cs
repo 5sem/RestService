@@ -16,7 +16,7 @@ namespace SpaendHjelmenREST
     {
         public IList<Track> GetTracks()
         {
-            const string sqlString = "SELECT * FROM Tracks";
+            string sqlString = "SELECT * FROM Tracks";
 
             using(SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
@@ -38,6 +38,27 @@ namespace SpaendHjelmenREST
         }
 
 
+        public Track GetTrackById(string id)
+        {
+            string sqlString = $"SELECT * FROM Tracks WHERE Id = '{id}'";
+
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
+                {
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var track = ReadTrack(reader);
+                            return track;
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
 
 
         private static Track ReadTrack(IDataRecord reader)
@@ -82,6 +103,5 @@ namespace SpaendHjelmenREST
             var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
             return connectionStringSettings.ConnectionString;
         }
-
     }
 }
