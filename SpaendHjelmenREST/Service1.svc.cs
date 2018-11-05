@@ -9,16 +9,19 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using SpaendHjelmenREST.Models;
+using SpaendHjelmenREST.Models.DTO;
 
 namespace SpaendHjelmenREST
 {
     public class Service1 : IService1
     {
+        #region Tracks
+
         public IList<Track> GetTracks()
         {
             string sqlString = "SELECT * FROM Tracks";
 
-            using(SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
                 sqlConnection.Open();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
@@ -96,6 +99,137 @@ namespace SpaendHjelmenREST
 
             return t;
         }
+
+
+
+        #endregion
+
+
+        #region Comments
+
+        public int PostComment(Comment comment)
+        {
+            const string postsql =
+                "INSERT INTO Comments (UserId, TrackId, UserComment) values (@UserId, @TrackId, @UserComment)";
+
+            //check userid ok
+            //burde tjek via token i send request
+            if (CheckUserId().FindAll(x => x.Id.Equals(comment.UserId)).Count > 0)
+            {
+                using (var DBConnection = new SqlConnection(GetConnectionString()))
+                {
+                    DBConnection.Open();
+                    using (var PostCommand = new SqlCommand(postsql, DBConnection))
+                    {
+                        PostCommand.Parameters.AddWithValue("@UserId", comment.UserId);
+                        PostCommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
+                        PostCommand.Parameters.AddWithValue("@UserComment", comment.UserCommennt);
+                        var rowsaffected = PostCommand.ExecuteNonQuery();
+                        return rowsaffected;
+                    }
+                }
+            }
+
+            return 403; //denied
+
+
+        }
+
+
+
+        public IList<Comment> GetComments()
+        {
+            const string GetCommentSql = "SELECT * From Comments";
+            using (var SqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                SqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(GetCommentSql, SqlConnection))
+                {
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        var _Comments =new List<Comment>();
+                        while (reader.Read())
+                        {
+                            var _Comment = CommentReader(reader);
+                            _Comments.Add(_Comment);
+                        }
+
+                        return _Comments;
+                    }
+                }
+            }
+        }
+
+        public int DeleteComment(string id)
+        {
+            string DeleteCommentSql = $"DELETE FROM Comments where id = @id";
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(DeleteCommentSql, sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@id", id);
+                    sqlCommand.ExecuteNonQuery();
+                    return 204; //resource deleted successfully
+                }
+            }
+        }
+
+
+        private List<UserDTO> CheckUserId()
+        {
+            const string userDtosql = "SELECT Id, AuthToken From Users";
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(userDtosql, sqlConnection))
+                {
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        var _UserList = new List<UserDTO>();
+                        while (reader.Read())
+                        {
+                            var _user = UserDTOReader(reader);
+                            _UserList.Add(_user);
+                        }
+
+                        return _UserList;
+                    }
+                }
+            }
+
+        }
+
+
+
+        private static Comment CommentReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var UserId = reader.GetInt32(1);
+            var TrackId = reader.GetInt32(2);
+            var UserComment = reader.GetString(3);
+            var Created = reader.GetDateTime(4);
+            var Edited = reader.GetDateTime(5);
+
+            var _Comment = new Comment
+            {
+                Id = Id, UserId = UserId, TrackId = TrackId, UserCommennt = UserComment, Created = Created,
+                Edited = Edited
+            };
+            return _Comment;
+        }
+
+        private static UserDTO UserDTOReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var AuthToken = reader.GetString(1);
+
+            var _UserDTO = new UserDTO { Id = Id, AuthToken = AuthToken };
+            return _UserDTO;
+        }
+
+        #endregion
+
 
         private static string GetConnectionString()
         {

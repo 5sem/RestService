@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\DTO\UserDTO.cs" />
     <Compile Include="Models\Information.cs" />
     <Compile Include="Models\Picture.cs" />
     <Compile Include="Models\Rating.cs" />

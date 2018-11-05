@@ -31,5 +31,30 @@ namespace SpaendHjelmenREST
 
 
         #endregion
+
+        #region Comment
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "comments")]
+        int PostComment(Comment comment);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "comments")]
+        IList<Comment> GetComments();
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "comments/{id}")]
+        int DeleteComment(string id);
+
+        #endregion
+
     }
 }

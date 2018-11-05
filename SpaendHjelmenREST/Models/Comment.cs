@@ -12,6 +12,7 @@ namespace SpaendHjelmenREST.Models
         public virtual int TrackId { get; set; }
         public virtual DateTime Created { get; set; }
         public virtual DateTime Edited { get; set; }
+        public virtual string UserCommennt { get; set; }
 
 
         public Comment()
