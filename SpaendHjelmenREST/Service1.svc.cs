@@ -136,6 +136,31 @@ namespace SpaendHjelmenREST
         }
 
 
+        public IList<Comment> GetCommentsByTrackId(string TrackId)
+        {
+            const string GetCommentSql = "SELECT * From Comments where TrackId=@TrackId";
+            using (var SqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                SqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(GetCommentSql, SqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@TrackId", TrackId);
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        var _Comments = new List<Comment>();
+                        while (reader.Read())
+                        {
+                            var _Comment = CommentReader(reader);
+                            _Comments.Add(_Comment);
+                        }
+
+                        return _Comments;
+                    }
+                }
+            }
+        }
+
+
 
         public IList<Comment> GetComments()
         {
@@ -147,7 +172,7 @@ namespace SpaendHjelmenREST
                 {
                     using (var reader = sqlCommand.ExecuteReader())
                     {
-                        var _Comments =new List<Comment>();
+                        var _Comments = new List<Comment>();
                         while (reader.Read())
                         {
                             var _Comment = CommentReader(reader);
@@ -213,7 +238,11 @@ namespace SpaendHjelmenREST
 
             var _Comment = new Comment
             {
-                Id = Id, UserId = UserId, TrackId = TrackId, UserComment = UserComment, Created = Created,
+                Id = Id,
+                UserId = UserId,
+                TrackId = TrackId,
+                UserComment = UserComment,
+                Created = Created,
                 Edited = Edited
             };
             return _Comment;
@@ -237,5 +266,7 @@ namespace SpaendHjelmenREST
             var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
             return connectionStringSettings.ConnectionString;
         }
+
+
     }
 }

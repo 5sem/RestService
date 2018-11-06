@@ -48,6 +48,12 @@ namespace SpaendHjelmenREST
         IList<Comment> GetComments();
 
         [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "comments/{TrackId}")]
+        IList<Comment> GetCommentsByTrackId(string TrackId);
+
+        [OperationContract]
         [WebInvoke(Method = "DELETE",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
