@@ -123,7 +123,7 @@ namespace SpaendHjelmenREST
                     {
                         PostCommand.Parameters.AddWithValue("@UserId", comment.UserId);
                         PostCommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
-                        PostCommand.Parameters.AddWithValue("@UserComment", comment.UserCommennt);
+                        PostCommand.Parameters.AddWithValue("@UserComment", comment.UserComment);
                         var rowsaffected = PostCommand.ExecuteNonQuery();
                         return rowsaffected;
                     }
@@ -213,7 +213,7 @@ namespace SpaendHjelmenREST
 
             var _Comment = new Comment
             {
-                Id = Id, UserId = UserId, TrackId = TrackId, UserCommennt = UserComment, Created = Created,
+                Id = Id, UserId = UserId, TrackId = TrackId, UserComment = UserComment, Created = Created,
                 Edited = Edited
             };
             return _Comment;
