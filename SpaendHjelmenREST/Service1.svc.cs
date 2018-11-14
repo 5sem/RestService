@@ -264,41 +264,7 @@ namespace SpaendHjelmenREST
         #endregion
 
 
-        private static string GetConnectionString()
-        {
-            var connectionStringSettingsCollection = ConfigurationManager.ConnectionStrings;
-            var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
-            return connectionStringSettings.ConnectionString;
-        }
-
-        private byte[] ByteConverter(string filepath)
-        {
-            byte[] Rtn = File.ReadAllBytes(filepath);
-            return Rtn;
-        }
-
-        public void PostPicture(string filepath)
-        {
-            const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
-            byte[] file;
-            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = new BinaryReader(stream))
-                {
-                    file = reader.ReadBytes((int)stream.Length);
-                }
-
-                using (var dbcon = new SqlConnection(GetConnectionString()))
-                {
-                    dbcon.Open();
-                    using (var PostCommand = new SqlCommand(sqlcommand, dbcon))
-                    {
-                        PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
-                        PostCommand.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
+        #region Picture
 
         public IList<Picture> GetPictures(string trackid)
         {
@@ -326,6 +292,40 @@ namespace SpaendHjelmenREST
                 }
             }
 
+        }
+
+
+        public void PostPicture(string filepath)
+        {
+            const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
+            byte[] file;
+            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new BinaryReader(stream))
+                {
+                    file = reader.ReadBytes((int)stream.Length);
+                }
+
+                using (var dbcon = new SqlConnection(GetConnectionString()))
+                {
+                    dbcon.Open();
+                    using (var PostCommand = new SqlCommand(sqlcommand, dbcon))
+                    {
+                        PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
+                        PostCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
+        private static string GetConnectionString()
+        {
+            var connectionStringSettingsCollection = ConfigurationManager.ConnectionStrings;
+            var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
+            return connectionStringSettings.ConnectionString;
         }
     }
 }
