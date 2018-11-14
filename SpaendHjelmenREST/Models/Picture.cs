@@ -9,7 +9,8 @@ namespace SpaendHjelmenREST.Models
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
-        public virtual byte Image { get; set; }
+        public virtual byte[] Image { get; set; }
+        public virtual int TrackId { get; set; }
 
         public Picture()
         {

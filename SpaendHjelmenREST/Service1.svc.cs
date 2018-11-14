@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -18,7 +19,7 @@ namespace SpaendHjelmenREST
         {
             string sqlString = "SELECT * FROM Tracks";
 
-            using(SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
                 sqlConnection.Open();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
@@ -60,6 +61,9 @@ namespace SpaendHjelmenREST
             }
         }
 
+       
+
+
 
         private static Track ReadTrack(IDataRecord reader)
         {
@@ -97,11 +101,89 @@ namespace SpaendHjelmenREST
             return t;
         }
 
+        private static Picture ReadPicture(IDataRecord reader)
+        {
+
+            var Id = reader.GetInt32(0);
+            var Name = reader.GetString(1);
+
+            var blob = new byte[(reader.GetBytes(0, 0, null, 0, int.MaxValue))];
+            reader.GetBytes(0, 0, blob, 0, blob.Length);
+
+            var TrackId = reader.GetInt32(3);
+
+            Picture t = new Picture(Id);
+
+            t.Id = Id;
+            t.Name = Name;
+            t.Image = blob;
+            t.TrackId = TrackId;
+
+            return t;
+        }
+
         private static string GetConnectionString()
         {
             var connectionStringSettingsCollection = ConfigurationManager.ConnectionStrings;
             var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
             return connectionStringSettings.ConnectionString;
+        }
+
+        private byte[] ByteConverter(string filepath)
+        {
+            byte[] Rtn = File.ReadAllBytes(filepath);
+            return Rtn;
+        }
+
+        public void PostPicture(string filepath)
+        {
+            const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
+            byte[] file;
+            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new BinaryReader(stream))
+                {
+                    file = reader.ReadBytes((int)stream.Length);
+                }
+
+                using (var dbcon = new SqlConnection(GetConnectionString()))
+                {
+                    dbcon.Open();
+                    using (var PostCommand = new SqlCommand(sqlcommand, dbcon))
+                    {
+                        PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
+                        PostCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        public IList<Picture> GetPictures(string trackid)
+        {
+            string sqlString = $"SELECT * FROM Pictures WHERE TrackId = '{trackid}'";
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(sqlString, sqlConnection))
+                {
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        List<Picture> picList = new List<Picture>();
+                        while (reader.Read())
+                        {
+                            Picture picture = new Picture();
+                            picture.Id = reader.GetInt32(0);
+                            picture.Name = reader.GetString(1);
+                            picture.Image = (byte[])reader.GetValue(2);
+                            picture.TrackId = reader.GetInt32(3);
+
+                            picList.Add(picture);
+                        }
+                        return picList;
+                    }
+                }
+            }
+
         }
     }
 }

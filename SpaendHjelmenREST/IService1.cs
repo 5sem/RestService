@@ -31,5 +31,22 @@ namespace SpaendHjelmenREST
 
 
         #endregion
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "Pictures/?filepath={filepath}")]
+        void PostPicture(string filepath);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "pictures/{trackid}")]
+        IList<Picture> GetPictures(string trackid);
+
     }
 }
