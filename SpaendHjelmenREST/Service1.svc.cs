@@ -71,7 +71,7 @@ namespace SpaendHjelmenREST
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
-            var PictureId = reader.GetInt32(1);
+            //var PictureId = reader.GetInt32(1);
             var Name = reader.GetString(2);
             var Info = reader.GetString(3);
             var Longitude = reader.GetDouble(4);
@@ -87,7 +87,7 @@ namespace SpaendHjelmenREST
 
             Track t = new Track(Id);
 
-            t.PictureId = PictureId;
+           // t.PictureId = PictureId;
             t.Name = Name;
             t.Info = Info;
             t.Longitude = Longitude;
