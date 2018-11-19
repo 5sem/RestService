@@ -12,7 +12,7 @@ namespace SpaendHjelmenREST
     [ServiceContract]
     public interface IService1
     {
-        
+
         #region Track
 
 
@@ -62,7 +62,7 @@ namespace SpaendHjelmenREST
 
         #endregion
 
-
+        #region Post
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -78,6 +78,17 @@ namespace SpaendHjelmenREST
             ResponseFormat = WebMessageFormat.Json,
             UriTemplate = "pictures/{trackid}")]
         IList<Picture> GetPictures(string trackid);
+
+        #endregion
+
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "Rating/{trackid}")]
+        int GetTrackRating(string trackid);
+
+
 
     }
 }

@@ -295,6 +295,8 @@ namespace SpaendHjelmenREST
         }
 
 
+
+
         public void PostPicture(string filepath)
         {
             const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
@@ -319,6 +321,55 @@ namespace SpaendHjelmenREST
         }
 
         #endregion
+
+
+        public int GetTrackRating(string trackid)
+        {
+            int _total = 0;
+            const string GetTrackRatingSql = "SELECT * FROM Rating where TrackId = @TrackId";
+            using (var DBcon = new SqlConnection(GetConnectionString()))
+            {
+                DBcon.Open();
+                using (var SqlCommand = new SqlCommand(GetTrackRatingSql, DBcon))
+                {
+                    SqlCommand.Parameters.AddWithValue("@TrackId", trackid);
+
+                    using (var reader = SqlCommand.ExecuteReader())
+                    {
+                        List<Rating> _ratings = new List<Rating>();
+                        while (reader.Read())
+                        {
+                            var _rating = RatingReader(reader);
+                            _ratings.Add(_rating);
+                        }
+
+
+                        foreach (var i in _ratings)
+                        {
+                            _total = +i.UserRating;
+                        }
+
+                        if (_total <= 0)
+                        {
+                            return 0;
+                        }
+                        return _total / _ratings.Count;
+                    }
+
+                }
+            }
+        }
+
+        private Rating RatingReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var UserId = reader.GetInt32(1);
+            var TrackId = reader.GetInt32(2);
+            var UserRating = reader.GetInt32(3);
+
+            var _rating = new Rating { Id = Id, UserId = UserId, TrackId = TrackId, UserRating = UserRating };
+            return _rating;
+        }
 
 
         private static string GetConnectionString()
