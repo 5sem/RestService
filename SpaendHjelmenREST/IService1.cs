@@ -60,6 +60,13 @@ namespace SpaendHjelmenREST
             UriTemplate = "comments/{id}")]
         int DeleteComment(string id);
 
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "comments/{id}/{NewUserComment}")]
+        int UpdateComment(string id, string NewUserComment);
+
         #endregion
 
         #region Post
@@ -80,7 +87,7 @@ namespace SpaendHjelmenREST
         IList<Picture> GetPictures(string trackid);
 
         #endregion
-
+        
 
         [OperationContract]
         [WebInvoke(Method = "GET",

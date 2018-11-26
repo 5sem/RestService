@@ -205,6 +205,22 @@ namespace SpaendHjelmenREST
         }
 
 
+        public int UpdateComment(string id, string NewUserComment)
+        {
+            string UpdateCommentSql = $"UPDATE Comments SET UserComment = @UserComment WHERE id = {id}";
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(UpdateCommentSql, sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@UserComment", NewUserComment);
+                    //sqlCommand.Parameters.AddWithValue("@Edited", DateTime.UtcNow);
+                    return sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         private List<UserDTO> CheckUserId()
         {
             const string userDtosql = "SELECT Id, AuthToken From Users";
@@ -251,6 +267,7 @@ namespace SpaendHjelmenREST
             };
             return _Comment;
         }
+
 
         private static UserDTO UserDTOReader(IDataRecord reader)
         {
