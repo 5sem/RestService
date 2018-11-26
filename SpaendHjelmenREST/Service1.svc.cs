@@ -360,6 +360,32 @@ namespace SpaendHjelmenREST
             }
         }
 
+        public int PostTrackRating(Rating rating)
+        {
+            const string postsql =
+                "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
+
+            //check userid ok
+            //burde tjek via token i send request
+            if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
+            {
+                using (var DBConnection = new SqlConnection(GetConnectionString()))
+                {
+                    DBConnection.Open();
+                    using (var PostCommand = new SqlCommand(postsql, DBConnection))
+                    {
+                        PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
+                        PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
+                        PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
+                        var rowsaffected = PostCommand.ExecuteNonQuery();
+                        return rowsaffected;
+                    }
+                }
+            }
+
+            return 403; //denied
+        }
+
         private Rating RatingReader(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
