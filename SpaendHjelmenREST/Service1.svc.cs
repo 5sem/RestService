@@ -64,7 +64,7 @@ namespace SpaendHjelmenREST
             }
         }
 
-       
+
 
 
 
@@ -87,7 +87,7 @@ namespace SpaendHjelmenREST
 
             Track t = new Track(Id);
 
-           // t.PictureId = PictureId;
+            // t.PictureId = PictureId;
             t.Name = Name;
             t.Info = Info;
             t.Longitude = Longitude;
@@ -363,7 +363,7 @@ namespace SpaendHjelmenREST
 
                         foreach (var i in _ratings)
                         {
-                            _total = +i.UserRating;
+                            _total = _total + i.UserRating;
                         }
 
                         if (_total <= 0)
@@ -377,9 +377,32 @@ namespace SpaendHjelmenREST
             }
         }
 
+        public int GetPersonalTrackRating(string userid, string trackid)
+        {
+            const string GetPersonalRating = "SELECT UserRating FROM Rating where UserId = @userid AND TrackId = @trackid";
+            using (var dbcon = new SqlConnection(GetConnectionString()))
+            {
+                dbcon.Open();
+                using (var sqlcommand = new SqlCommand(GetPersonalRating, dbcon))
+                {
+                    sqlcommand.Parameters.AddWithValue("@userid", userid);
+                    sqlcommand.Parameters.AddWithValue("@trackid", trackid);
+                    using(var reader = sqlcommand.ExecuteReader())
+                    {
+                        int _rating = 0;
+                        while (reader.Read())
+                        {
+                            _rating = reader.GetInt32(0);
+                        }
+                        return _rating;
+                    }
+                }
+            }
+        }
+
         public int PostTrackRating(Rating rating)
         {
-            const string postsql =
+            const string PostTrackRating =
                 "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
 
             //check userid ok
@@ -389,13 +412,13 @@ namespace SpaendHjelmenREST
                 using (var DBConnection = new SqlConnection(GetConnectionString()))
                 {
                     DBConnection.Open();
-                    using (var PostCommand = new SqlCommand(postsql, DBConnection))
+                    using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
                     {
                         PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
                         PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
                         PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
-                        var rowsaffected = PostCommand.ExecuteNonQuery();
-                        return rowsaffected;
+                        PostCommand.ExecuteNonQuery();
+                        return 201;
                     }
                 }
             }

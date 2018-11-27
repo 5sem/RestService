@@ -90,12 +90,17 @@ namespace SpaendHjelmenREST
 
         #region Rating
 
-          [OperationContract]
+        [OperationContract]
         [WebInvoke(Method = "GET",
-            ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "Rating/{trackid}")]
+          ResponseFormat = WebMessageFormat.Json,
+          UriTemplate = "Rating/{trackid}")]
         int GetTrackRating(string trackid);
 
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+         ResponseFormat = WebMessageFormat.Json,
+         UriTemplate = "Rating/personlig/{userid}/{trackid}")]
+        int GetPersonalTrackRating(string userid, string trackid);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
