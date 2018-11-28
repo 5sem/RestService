@@ -208,14 +208,15 @@ namespace SpaendHjelmenREST
         public int UpdateComment(Comment comment, string commentid)
         {
             const string UpdateCommentSql = "UPDATE comments SET UserId = @UserId, TrackId = @TrackId, Edited = @Edited, UserComment = @UserComment WHERE Id = @id";
+            DateTime now = DateTime.Now;
             using (var dbcon = new SqlConnection(GetConnectionString()))
             {
                 dbcon.Open();
-                using (var sqlcommand = new SqlCommand(UpdateCommentSql,dbcon))
+                using (var sqlcommand = new SqlCommand(UpdateCommentSql, dbcon))
                 {
                     sqlcommand.Parameters.AddWithValue("@UserId", comment.UserId);
                     sqlcommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
-                    sqlcommand.Parameters.AddWithValue("@Edited", comment.Created);
+                    sqlcommand.Parameters.AddWithValue("@Edited", now);
                     sqlcommand.Parameters.AddWithValue("@UserComment", comment.UserComment);
                     sqlcommand.Parameters.AddWithValue("@id", commentid);
                     sqlcommand.ExecuteNonQuery();
@@ -391,7 +392,7 @@ namespace SpaendHjelmenREST
                 {
                     sqlcommand.Parameters.AddWithValue("@userid", userid);
                     sqlcommand.Parameters.AddWithValue("@trackid", trackid);
-                    using(var reader = sqlcommand.ExecuteReader())
+                    using (var reader = sqlcommand.ExecuteReader())
                     {
                         int _rating = 0;
                         while (reader.Read())
@@ -406,28 +407,47 @@ namespace SpaendHjelmenREST
 
         public int PostTrackRating(Rating rating)
         {
-            const string PostTrackRating =
-                "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
-
-            //check userid ok
-            //burde tjek via token i send request
-            if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
+            if (GetPersonalTrackRating(rating.UserId.ToString(), rating.TrackId.ToString()) != null)
             {
-                using (var DBConnection = new SqlConnection(GetConnectionString()))
+
+                const string PostTrackRating =
+                    "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
+
+                //check userid ok
+                //burde tjek via token i send request
+                if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
                 {
-                    DBConnection.Open();
-                    using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
+                    using (var DBConnection = new SqlConnection(GetConnectionString()))
                     {
-                        PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
-                        PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
-                        PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
-                        PostCommand.ExecuteNonQuery();
+                        DBConnection.Open();
+                        using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
+                        {
+                            PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
+                            PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
+                            PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
+                            PostCommand.ExecuteNonQuery();
+                            return 201;
+                        }
+                    }
+                }
+            }
+            //put her
+            const string puttrackrating = "INSERT Rating SET UserRating = @userrating where UserId = @userid AND TrackId = @trackid";
+            using (var dbcon = new SqlConnection(GetConnectionString()))
+            {
+                dbcon.Open();
+                using (dbcon)
+                {
+                    using (var sqlcommand = new SqlCommand(puttrackrating, dbcon))
+                    {
+                        sqlcommand.Parameters.AddWithValue("@userrating", rating.UserRating);
+                        sqlcommand.Parameters.AddWithValue("@userid", rating.UserId);
+                        sqlcommand.Parameters.AddWithValue("@trackid", rating.TrackId);
+                        sqlcommand.ExecuteNonQuery();
                         return 201;
                     }
                 }
             }
-
-            return 403; //denied
         }
 
         private Rating RatingReader(IDataRecord reader)
