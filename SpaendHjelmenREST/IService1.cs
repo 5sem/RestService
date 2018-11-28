@@ -1,4 +1,5 @@
 ﻿using SpaendHjelmenREST.Models;
+using SpaendHjelmenREST.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,5 +80,12 @@ namespace SpaendHjelmenREST
             UriTemplate = "pictures/{trackid}")]
         IList<Picture> GetPictures(string trackid);
 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "mikker/")]
+        void Mikker(PictureDTO pictureDTO);
     }
 }

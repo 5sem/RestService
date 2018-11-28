@@ -327,5 +327,28 @@ namespace SpaendHjelmenREST
             }
 
         }
+
+        public void Mikker(PictureDTO pictureDTO)
+        {
+
+
+            const string postpicturesql =
+                "INSERT INTO Pictures (Name, Image, TrackId) VALUES (@Name, @Image, @TrackId)";
+            using (var DBConnection = new SqlConnection(GetConnectionString()))
+            {
+                DBConnection.Open();
+                using (var SqlCommand = new SqlCommand(postpicturesql, DBConnection))
+                {
+                    SqlCommand.Parameters.AddWithValue("@Name", pictureDTO.Name);
+
+
+                    byte[] PostImage = Convert.FromBase64String(pictureDTO.Image);
+
+                    SqlCommand.Parameters.AddWithValue("@Image", PostImage);
+                    SqlCommand.Parameters.AddWithValue("@TrackId", pictureDTO.TrackId);
+                    SqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
