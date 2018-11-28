@@ -432,7 +432,7 @@ namespace SpaendHjelmenREST
                 }
             }
             //put her
-            const string puttrackrating = "INSERT Rating SET UserRating = @userrating where UserId = @userid AND TrackId = @trackid";
+            const string puttrackrating = "UPDATE Rating SET UserRating = @userrating where UserId = @userid AND TrackId = @trackid";
             using (var dbcon = new SqlConnection(GetConnectionString()))
             {
                 dbcon.Open();
