@@ -64,8 +64,8 @@ namespace SpaendHjelmenREST
         [WebInvoke(Method = "PUT",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "comments/{id}/{NewUserComment}")]
-        int UpdateComment(Comment comment);
+            UriTemplate = "comments/{commentid}")]
+        int UpdateComment(Comment comment, string commentid);
 
         #endregion
 

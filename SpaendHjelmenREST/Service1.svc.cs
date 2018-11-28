@@ -205,9 +205,9 @@ namespace SpaendHjelmenREST
         }
 
 
-        public int UpdateComment(Comment comment)
+        public int UpdateComment(Comment comment, string commentid)
         {
-            const string UpdateCommentSql = "UPDATE comments SET UserId = @UserId, TrackId = @TrackId, Edited = @Edited, UserComment = @UserComment";
+            const string UpdateCommentSql = "UPDATE comments SET UserId = @UserId, TrackId = @TrackId, Edited = @Edited, UserComment = @UserComment WHERE Id = @id";
             using (var dbcon = new SqlConnection(GetConnectionString()))
             {
                 dbcon.Open();
@@ -217,6 +217,7 @@ namespace SpaendHjelmenREST
                     sqlcommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
                     sqlcommand.Parameters.AddWithValue("@Edited", comment.Created);
                     sqlcommand.Parameters.AddWithValue("@UserComment", comment.UserComment);
+                    sqlcommand.Parameters.AddWithValue("@id", commentid);
                     sqlcommand.ExecuteNonQuery();
                     return 204;
                 }
