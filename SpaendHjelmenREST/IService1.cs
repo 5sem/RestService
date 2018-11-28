@@ -65,7 +65,7 @@ namespace SpaendHjelmenREST
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
             UriTemplate = "comments/{id}/{NewUserComment}")]
-        int UpdateComment(string id, string NewUserComment);
+        int UpdateComment(Comment comment);
 
         #endregion
 

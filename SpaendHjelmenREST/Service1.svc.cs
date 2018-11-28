@@ -205,17 +205,20 @@ namespace SpaendHjelmenREST
         }
 
 
-        public int UpdateComment(string id, string NewUserComment)
+        public int UpdateComment(Comment comment)
         {
-            string UpdateCommentSql = $"UPDATE Comments SET UserComment = @UserComment WHERE id = {id}";
-            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            const string UpdateCommentSql = "UPDATE comments SET UserId = @UserId, TrackId = @TrackId, Edited = @Edited, UserComment = @UserComment";
+            using (var dbcon = new SqlConnection(GetConnectionString()))
             {
-                sqlConnection.Open();
-                using (var sqlCommand = new SqlCommand(UpdateCommentSql, sqlConnection))
+                dbcon.Open();
+                using (var sqlcommand = new SqlCommand(UpdateCommentSql,dbcon))
                 {
-                    sqlCommand.Parameters.AddWithValue("@UserComment", NewUserComment);
-                    //sqlCommand.Parameters.AddWithValue("@Edited", DateTime.UtcNow);
-                    return sqlCommand.ExecuteNonQuery();
+                    sqlcommand.Parameters.AddWithValue("@UserId", comment.UserId);
+                    sqlcommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
+                    sqlcommand.Parameters.AddWithValue("@Edited", comment.Created);
+                    sqlcommand.Parameters.AddWithValue("@UserComment", comment.UserComment);
+                    sqlcommand.ExecuteNonQuery();
+                    return 204;
                 }
             }
         }
