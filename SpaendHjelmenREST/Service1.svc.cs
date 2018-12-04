@@ -64,10 +64,6 @@ namespace SpaendHjelmenREST
             }
         }
 
-
-
-
-
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
@@ -104,10 +100,7 @@ namespace SpaendHjelmenREST
             return t;
         }
 
-
-
         #endregion
-
 
         #region Comments
 
@@ -285,7 +278,6 @@ namespace SpaendHjelmenREST
 
         #endregion
 
-
         #region Picture
 
         public IList<Picture> GetPictures(string trackid)
@@ -337,6 +329,32 @@ namespace SpaendHjelmenREST
                     {
                         PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
                         PostCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region User
+
+        public User GetUserById(string id)
+        {
+            string sqlString = $"SELECT * FROM Users WHERE Id = '{id}'";
+
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
+                {
+                    using(var reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var user = UserReader(reader);
+                            return user;
+                        }
+                        return null;
                     }
                 }
             }
@@ -461,6 +479,20 @@ namespace SpaendHjelmenREST
             return _rating;
         }
 
+        private User UserReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var AuthToken = reader.GetString(1);
+            var UserName = reader.GetString(2);
+            //var Image = reader.GetByte(3);
+            //var ContactNumber = reader.GetInt32(3);
+            //var ContactMessage = reader.GetString(4);
+            //var Privacy = reader.GetBoolean(5);
+
+            var user = new User { Id = Id, AuthToken = AuthToken, UserName = UserName };
+            return user;
+        }
+
 
         private static string GetConnectionString()
         {
@@ -468,5 +500,6 @@ namespace SpaendHjelmenREST
             var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
             return connectionStringSettings.ConnectionString;
         }
+
     }
 }

@@ -111,7 +111,15 @@ namespace SpaendHjelmenREST
 
         #endregion
 
+        #region User
 
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "users/{id}")]
+        User GetUserById(string id);
+
+        #endregion
 
 
     }
