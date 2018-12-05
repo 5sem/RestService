@@ -120,6 +120,13 @@ namespace SpaendHjelmenREST
             UriTemplate = "users/{id}")]
         User GetUserById(string id);
 
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "user/{id}")]
+        int UpdateDescription(User user, string id);
+
         #endregion
 
 

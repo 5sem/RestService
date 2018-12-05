@@ -360,6 +360,23 @@ namespace SpaendHjelmenREST
             }
         }
 
+        public int UpdateDescription(User user, string id)
+        {
+            //TODO: billede
+            const string PutUserSql = "UPDATE Users SET Description = @Description, Privacy = @Privacy WHERE Id = @Id";
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+               sqlConnection.Open();
+                using (var sqlcommand = new SqlCommand(PutUserSql, sqlConnection))
+                {
+                    sqlcommand.Parameters.AddWithValue("@Description", user.Description);
+                    sqlcommand.Parameters.AddWithValue("@Privacy", user.Privacy);
+                    sqlcommand.Parameters.AddWithValue("@Id", id);
+                    return 204;
+                }
+            }
+        }
+
         #endregion
 
 
@@ -485,11 +502,10 @@ namespace SpaendHjelmenREST
             var AuthToken = reader.GetString(1);
             var UserName = reader.GetString(2);
             //var Image = reader.GetByte(3);
-            //var ContactNumber = reader.GetInt32(3);
-            //var ContactMessage = reader.GetString(4);
-            //var Privacy = reader.GetBoolean(5);
+            var Description = reader.GetString(4);
+            var Privacy = reader.GetBoolean(5);
 
-            var user = new User { Id = Id, AuthToken = AuthToken, UserName = UserName };
+            var user = new User { Id = Id, AuthToken = AuthToken, UserName = UserName, Description = Description, Privacy = Privacy};
             return user;
         }
 
