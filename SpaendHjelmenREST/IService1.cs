@@ -124,7 +124,7 @@ namespace SpaendHjelmenREST
         [WebInvoke(Method = "PUT",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "user/{id}")]
+            UriTemplate = "users/{id}")]
         int UpdateDescription(User user, string id);
 
         #endregion

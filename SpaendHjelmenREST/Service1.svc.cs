@@ -372,6 +372,7 @@ namespace SpaendHjelmenREST
                     sqlcommand.Parameters.AddWithValue("@Description", user.Description);
                     sqlcommand.Parameters.AddWithValue("@Privacy", user.Privacy);
                     sqlcommand.Parameters.AddWithValue("@Id", id);
+                    sqlcommand.ExecuteNonQuery();
                     return 204;
                 }
             }
