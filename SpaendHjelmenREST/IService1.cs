@@ -115,6 +115,7 @@ namespace SpaendHjelmenREST
 
         [OperationContract]
         [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "users/{id}")]
         User GetUserById(string id);

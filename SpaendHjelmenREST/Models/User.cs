@@ -12,8 +12,7 @@ namespace SpaendHjelmenREST.Models
         public virtual string AuthToken { get; set; }
         public virtual string UserName { get; set; }
         public virtual byte Image { get; set; }
-        public virtual int ContactNumber { get; set; }
-        public virtual string ContactMessage { get; set; }
+        public virtual string Description { get; set; }
         [DefaultValue(false)]
         public virtual bool Privacy { get; set; }
 
