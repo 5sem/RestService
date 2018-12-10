@@ -112,6 +112,17 @@ namespace SpaendHjelmenREST
 
         #endregion
 
+        #region User
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "users")]
+        int PostUser(User user);
+
+        #endregion
+
 
 
 

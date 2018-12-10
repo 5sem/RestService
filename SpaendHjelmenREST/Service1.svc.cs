@@ -307,6 +307,7 @@ namespace SpaendHjelmenREST
                         return picList;
                     }
                 }
+
             }
 
         }
@@ -335,6 +336,31 @@ namespace SpaendHjelmenREST
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region
+
+        public int PostUser(User user)
+        {
+            const string postUserSql = "INSERT INTO Users (AuthToken, UserName, Image, Description, Privacy) values (@AuthToken, @UserName, @Image, @Description, @Privacy)";
+
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using(SqlCommand postCommand = new SqlCommand(postUserSql, sqlConnection))
+                {
+                    postCommand.Parameters.AddWithValue("@AuthToken", user.AuthToken);
+                    postCommand.Parameters.AddWithValue("@UserName", user.UserName);
+                    postCommand.Parameters.AddWithValue("@Image", user.Image);
+                    postCommand.Parameters.AddWithValue("@Description", user.Description);
+                    postCommand.Parameters.AddWithValue("@Privacy", user.Privacy);
+
+                    return postCommand.ExecuteNonQuery();
+                }
+            }
+
         }
 
         #endregion
