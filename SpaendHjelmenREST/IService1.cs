@@ -65,8 +65,8 @@ namespace SpaendHjelmenREST
         [WebInvoke(Method = "PUT",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "comments/{id}/{NewUserComment}")]
-        int UpdateComment(string id, string NewUserComment);
+            UriTemplate = "comments/{commentid}")]
+        int UpdateComment(Comment comment, string commentid);
 
         #endregion
 
@@ -115,6 +115,21 @@ namespace SpaendHjelmenREST
         #region User
 
         [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "users/{id}")]
+        User GetUserById(string id);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "users/{id}")]
+        int UpdateDescription(User user, string id);
+        #region User
+
+        [OperationContract]
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -124,6 +139,7 @@ namespace SpaendHjelmenREST
         #endregion
 
 
+        #endregion
 
 
     }

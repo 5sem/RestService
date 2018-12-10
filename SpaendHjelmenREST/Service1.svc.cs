@@ -64,10 +64,6 @@ namespace SpaendHjelmenREST
             }
         }
 
-
-
-
-
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
@@ -104,10 +100,7 @@ namespace SpaendHjelmenREST
             return t;
         }
 
-
-
         #endregion
-
 
         #region Comments
 
@@ -205,17 +198,22 @@ namespace SpaendHjelmenREST
         }
 
 
-        public int UpdateComment(string id, string NewUserComment)
+        public int UpdateComment(Comment comment, string commentid)
         {
-            string UpdateCommentSql = $"UPDATE Comments SET UserComment = @UserComment WHERE id = {id}";
-            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            const string UpdateCommentSql = "UPDATE comments SET UserId = @UserId, TrackId = @TrackId, Edited = @Edited, UserComment = @UserComment WHERE Id = @id";
+            DateTime now = DateTime.Now;
+            using (var dbcon = new SqlConnection(GetConnectionString()))
             {
-                sqlConnection.Open();
-                using (var sqlCommand = new SqlCommand(UpdateCommentSql, sqlConnection))
+                dbcon.Open();
+                using (var sqlcommand = new SqlCommand(UpdateCommentSql, dbcon))
                 {
-                    sqlCommand.Parameters.AddWithValue("@UserComment", NewUserComment);
-                    //sqlCommand.Parameters.AddWithValue("@Edited", DateTime.UtcNow);
-                    return sqlCommand.ExecuteNonQuery();
+                    sqlcommand.Parameters.AddWithValue("@UserId", comment.UserId);
+                    sqlcommand.Parameters.AddWithValue("@TrackId", comment.TrackId);
+                    sqlcommand.Parameters.AddWithValue("@Edited", now);
+                    sqlcommand.Parameters.AddWithValue("@UserComment", comment.UserComment);
+                    sqlcommand.Parameters.AddWithValue("@id", commentid);
+                    sqlcommand.ExecuteNonQuery();
+                    return 204;
                 }
             }
         }
@@ -280,7 +278,6 @@ namespace SpaendHjelmenREST
 
         #endregion
 
-
         #region Picture
 
         public IList<Picture> GetPictures(string trackid)
@@ -334,6 +331,50 @@ namespace SpaendHjelmenREST
                         PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
                         PostCommand.ExecuteNonQuery();
                     }
+                }
+            }
+        }
+
+        #endregion
+
+        #region User
+
+        public User GetUserById(string id)
+        {
+            string sqlString = $"SELECT * FROM Users WHERE Id = '{id}'";
+
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (SqlCommand sqlCommand = new SqlCommand(sqlString, sqlConnection))
+                {
+                    using(var reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var user = UserReader(reader);
+                            return user;
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
+
+        public int UpdateDescription(User user, string id)
+        {
+            //TODO: billede
+            const string PutUserSql = "UPDATE Users SET Description = @Description, Privacy = @Privacy WHERE Id = @Id";
+            using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+               sqlConnection.Open();
+                using (var sqlcommand = new SqlCommand(PutUserSql, sqlConnection))
+                {
+                    sqlcommand.Parameters.AddWithValue("@Description", user.Description);
+                    sqlcommand.Parameters.AddWithValue("@Privacy", user.Privacy);
+                    sqlcommand.Parameters.AddWithValue("@Id", id);
+                    sqlcommand.ExecuteNonQuery();
+                    return 204;
                 }
             }
         }
@@ -413,7 +454,7 @@ namespace SpaendHjelmenREST
                 {
                     sqlcommand.Parameters.AddWithValue("@userid", userid);
                     sqlcommand.Parameters.AddWithValue("@trackid", trackid);
-                    using(var reader = sqlcommand.ExecuteReader())
+                    using (var reader = sqlcommand.ExecuteReader())
                     {
                         int _rating = 0;
                         while (reader.Read())
@@ -428,28 +469,47 @@ namespace SpaendHjelmenREST
 
         public int PostTrackRating(Rating rating)
         {
-            const string PostTrackRating =
-                "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
-
-            //check userid ok
-            //burde tjek via token i send request
-            if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
+            if (GetPersonalTrackRating(rating.UserId.ToString(), rating.TrackId.ToString()) != null)
             {
-                using (var DBConnection = new SqlConnection(GetConnectionString()))
+
+                const string PostTrackRating =
+                    "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
+
+                //check userid ok
+                //burde tjek via token i send request
+                if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
                 {
-                    DBConnection.Open();
-                    using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
+                    using (var DBConnection = new SqlConnection(GetConnectionString()))
                     {
-                        PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
-                        PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
-                        PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
-                        PostCommand.ExecuteNonQuery();
+                        DBConnection.Open();
+                        using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
+                        {
+                            PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
+                            PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
+                            PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
+                            PostCommand.ExecuteNonQuery();
+                            return 201;
+                        }
+                    }
+                }
+            }
+            //put her
+            const string puttrackrating = "UPDATE Rating SET UserRating = @userrating where UserId = @userid AND TrackId = @trackid";
+            using (var dbcon = new SqlConnection(GetConnectionString()))
+            {
+                dbcon.Open();
+                using (dbcon)
+                {
+                    using (var sqlcommand = new SqlCommand(puttrackrating, dbcon))
+                    {
+                        sqlcommand.Parameters.AddWithValue("@userrating", rating.UserRating);
+                        sqlcommand.Parameters.AddWithValue("@userid", rating.UserId);
+                        sqlcommand.Parameters.AddWithValue("@trackid", rating.TrackId);
+                        sqlcommand.ExecuteNonQuery();
                         return 201;
                     }
                 }
             }
-
-            return 403; //denied
         }
 
         private Rating RatingReader(IDataRecord reader)
@@ -461,6 +521,19 @@ namespace SpaendHjelmenREST
 
             var _rating = new Rating { Id = Id, UserId = UserId, TrackId = TrackId, UserRating = UserRating };
             return _rating;
+        }
+
+        private User UserReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var AuthToken = reader.GetString(1);
+            var UserName = reader.GetString(2);
+            //var Image = reader.GetByte(3);
+            var Description = reader.GetString(4);
+            var Privacy = reader.GetBoolean(5);
+
+            var user = new User { Id = Id, AuthToken = AuthToken, UserName = UserName, Description = Description, Privacy = Privacy};
+            return user;
         }
 
 
