@@ -13,7 +13,7 @@ namespace SpaendHjelmenREST
     [ServiceContract]
     public interface IService1
     {
-        
+
         #region Track
 
 
@@ -61,9 +61,16 @@ namespace SpaendHjelmenREST
             UriTemplate = "comments/{id}")]
         int DeleteComment(string id);
 
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "comments/{id}/{NewUserComment}")]
+        int UpdateComment(string id, string NewUserComment);
+
         #endregion
 
-
+        #region Post
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -80,12 +87,33 @@ namespace SpaendHjelmenREST
             UriTemplate = "pictures/{trackid}")]
         IList<Picture> GetPictures(string trackid);
 
+        #endregion
+
+        #region Rating
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+          ResponseFormat = WebMessageFormat.Json,
+          UriTemplate = "Rating/{trackid}")]
+        int GetTrackRating(string trackid);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+         ResponseFormat = WebMessageFormat.Json,
+         UriTemplate = "Rating/personlig/{userid}/{trackid}")]
+        int GetPersonalTrackRating(string userid, string trackid);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-            RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
-            UriTemplate = "mikker/")]
-        void Mikker(PictureDTO pictureDTO);
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "Rating")]
+        int PostTrackRating(Rating rating);
+
+        #endregion
+
+
+
+
     }
 }

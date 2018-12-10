@@ -64,14 +64,14 @@ namespace SpaendHjelmenREST
             }
         }
 
-       
+
 
 
 
         private static Track ReadTrack(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
-            var PictureId = reader.GetInt32(1);
+            //var PictureId = reader.GetInt32(1);
             var Name = reader.GetString(2);
             var Info = reader.GetString(3);
             var Longitude = reader.GetDouble(4);
@@ -87,7 +87,7 @@ namespace SpaendHjelmenREST
 
             Track t = new Track(Id);
 
-            t.PictureId = PictureId;
+            // t.PictureId = PictureId;
             t.Name = Name;
             t.Info = Info;
             t.Longitude = Longitude;
@@ -205,6 +205,22 @@ namespace SpaendHjelmenREST
         }
 
 
+        public int UpdateComment(string id, string NewUserComment)
+        {
+            string UpdateCommentSql = $"UPDATE Comments SET UserComment = @UserComment WHERE id = {id}";
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                sqlConnection.Open();
+                using (var sqlCommand = new SqlCommand(UpdateCommentSql, sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@UserComment", NewUserComment);
+                    //sqlCommand.Parameters.AddWithValue("@Edited", DateTime.UtcNow);
+                    return sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         private List<UserDTO> CheckUserId()
         {
             const string userDtosql = "SELECT Id, AuthToken From Users";
@@ -252,6 +268,7 @@ namespace SpaendHjelmenREST
             return _Comment;
         }
 
+
         private static UserDTO UserDTOReader(IDataRecord reader)
         {
             var Id = reader.GetInt32(0);
@@ -264,41 +281,7 @@ namespace SpaendHjelmenREST
         #endregion
 
 
-        private static string GetConnectionString()
-        {
-            var connectionStringSettingsCollection = ConfigurationManager.ConnectionStrings;
-            var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
-            return connectionStringSettings.ConnectionString;
-        }
-
-        private byte[] ByteConverter(string filepath)
-        {
-            byte[] Rtn = File.ReadAllBytes(filepath);
-            return Rtn;
-        }
-
-        public void PostPicture(string filepath)
-        {
-            const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
-            byte[] file;
-            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = new BinaryReader(stream))
-                {
-                    file = reader.ReadBytes((int)stream.Length);
-                }
-
-                using (var dbcon = new SqlConnection(GetConnectionString()))
-                {
-                    dbcon.Open();
-                    using (var PostCommand = new SqlCommand(sqlcommand, dbcon))
-                    {
-                        PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
-                        PostCommand.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
+        #region Picture
 
         public IList<Picture> GetPictures(string trackid)
         {
@@ -326,6 +309,140 @@ namespace SpaendHjelmenREST
                 }
             }
 
+        }
+
+
+
+
+        public void PostPicture(string filepath)
+        {
+            const string sqlcommand = "INSERT INTO Pictures (Image) Values (@file)";
+            byte[] file;
+            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new BinaryReader(stream))
+                {
+                    file = reader.ReadBytes((int)stream.Length);
+                }
+
+                using (var dbcon = new SqlConnection(GetConnectionString()))
+                {
+                    dbcon.Open();
+                    using (var PostCommand = new SqlCommand(sqlcommand, dbcon))
+                    {
+                        PostCommand.Parameters.Add("@file", SqlDbType.VarBinary, file.Length).Value = file;
+                        PostCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
+        public int GetTrackRating(string trackid)
+        {
+            int _total = 0;
+            const string GetTrackRatingSql = "SELECT * FROM Rating where TrackId = @TrackId";
+            using (var DBcon = new SqlConnection(GetConnectionString()))
+            {
+                DBcon.Open();
+                using (var SqlCommand = new SqlCommand(GetTrackRatingSql, DBcon))
+                {
+                    SqlCommand.Parameters.AddWithValue("@TrackId", trackid);
+
+                    using (var reader = SqlCommand.ExecuteReader())
+                    {
+                        List<Rating> _ratings = new List<Rating>();
+                        while (reader.Read())
+                        {
+                            var _rating = RatingReader(reader);
+                            _ratings.Add(_rating);
+                        }
+
+
+                        foreach (var i in _ratings)
+                        {
+                            _total = _total + i.UserRating;
+                        }
+
+                        if (_total <= 0)
+                        {
+                            return 0;
+                        }
+                        return _total / _ratings.Count;
+                    }
+
+                }
+            }
+        }
+
+        public int GetPersonalTrackRating(string userid, string trackid)
+        {
+            const string GetPersonalRating = "SELECT UserRating FROM Rating where UserId = @userid AND TrackId = @trackid";
+            using (var dbcon = new SqlConnection(GetConnectionString()))
+            {
+                dbcon.Open();
+                using (var sqlcommand = new SqlCommand(GetPersonalRating, dbcon))
+                {
+                    sqlcommand.Parameters.AddWithValue("@userid", userid);
+                    sqlcommand.Parameters.AddWithValue("@trackid", trackid);
+                    using(var reader = sqlcommand.ExecuteReader())
+                    {
+                        int _rating = 0;
+                        while (reader.Read())
+                        {
+                            _rating = reader.GetInt32(0);
+                        }
+                        return _rating;
+                    }
+                }
+            }
+        }
+
+        public int PostTrackRating(Rating rating)
+        {
+            const string PostTrackRating =
+                "INSERT INTO Rating (UserId, TrackId, UserRating) values (@UserId, @TrackId, @UserRating)";
+
+            //check userid ok
+            //burde tjek via token i send request
+            if (CheckUserId().FindAll(x => x.Id.Equals(rating.UserId)).Count > 0)
+            {
+                using (var DBConnection = new SqlConnection(GetConnectionString()))
+                {
+                    DBConnection.Open();
+                    using (var PostCommand = new SqlCommand(PostTrackRating, DBConnection))
+                    {
+                        PostCommand.Parameters.AddWithValue("@UserId", rating.UserId);
+                        PostCommand.Parameters.AddWithValue("@TrackId", rating.TrackId);
+                        PostCommand.Parameters.AddWithValue("@UserRating", rating.UserRating);
+                        PostCommand.ExecuteNonQuery();
+                        return 201;
+                    }
+                }
+            }
+
+            return 403; //denied
+        }
+
+        private Rating RatingReader(IDataRecord reader)
+        {
+            var Id = reader.GetInt32(0);
+            var UserId = reader.GetInt32(1);
+            var TrackId = reader.GetInt32(2);
+            var UserRating = reader.GetInt32(3);
+
+            var _rating = new Rating { Id = Id, UserId = UserId, TrackId = TrackId, UserRating = UserRating };
+            return _rating;
+        }
+
+
+        private static string GetConnectionString()
+        {
+            var connectionStringSettingsCollection = ConfigurationManager.ConnectionStrings;
+            var connectionStringSettings = connectionStringSettingsCollection["CykelDB"];
+            return connectionStringSettings.ConnectionString;
         }
 
         public void Mikker(PictureDTO pictureDTO)
