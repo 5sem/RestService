@@ -339,6 +339,33 @@ namespace SpaendHjelmenREST
 
         #region User
 
+
+
+        public int GetIdFromUserToken(string auth)
+        {
+            int id;
+            const string GetIdFromAuthSql = "SELECT Id, AuthToken From Users WHERE AuthToken = @authtoken";
+            using (var SqlConncetion = new SqlConnection(GetConnectionString()))
+            {
+                SqlConncetion.Open();
+                using (var SqlCommand = new SqlCommand(GetIdFromAuthSql, SqlConncetion))
+                {
+                    SqlCommand.Parameters.AddWithValue("@authtoken", auth);
+                    using (var reader = SqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            id = reader.GetInt32(0);
+                            return id;
+                        }
+                        return default(int);
+                    }
+                }
+            }
+        }
+
+
+
         public User GetUserById(string id)
         {
             string sqlString = $"SELECT * FROM Users WHERE Id = '{id}'";
@@ -401,6 +428,8 @@ namespace SpaendHjelmenREST
             }
 
         }
+
+ 
 
         #endregion
 

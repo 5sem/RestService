@@ -137,7 +137,12 @@ namespace SpaendHjelmenREST
         int PostUser(User user);
 
 
-
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "user/{auth}")]
+        int GetIdFromUserToken(string auth);
 
         #endregion
 
