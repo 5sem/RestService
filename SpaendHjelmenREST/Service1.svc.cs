@@ -385,7 +385,7 @@ namespace SpaendHjelmenREST
 
         public int PostUser(User user)
         {
-            const string postUserSql = "INSERT INTO Users (AuthToken, UserName, Image, Description, Privacy) values (@AuthToken, @UserName, @Image, @Description, @Privacy)";
+            const string postUserSql = "INSERT INTO Users (AuthToken, UserName, Description) values (@AuthToken, @UserName, @Description)";
 
             using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
@@ -394,11 +394,9 @@ namespace SpaendHjelmenREST
                 {
                     postCommand.Parameters.AddWithValue("@AuthToken", user.AuthToken);
                     postCommand.Parameters.AddWithValue("@UserName", user.UserName);
-                    postCommand.Parameters.AddWithValue("@Image", user.Image);
                     postCommand.Parameters.AddWithValue("@Description", user.Description);
-                    postCommand.Parameters.AddWithValue("@Privacy", user.Privacy);
 
-                    return postCommand.ExecuteNonQuery();
+                    return 201;
                 }
             }
 

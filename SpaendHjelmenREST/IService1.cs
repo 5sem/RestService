@@ -127,7 +127,7 @@ namespace SpaendHjelmenREST
             ResponseFormat = WebMessageFormat.Json,
             UriTemplate = "users/{id}")]
         int UpdateDescription(User user, string id);
-        #region User
+       
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -136,7 +136,7 @@ namespace SpaendHjelmenREST
             UriTemplate = "users")]
         int PostUser(User user);
 
-        #endregion
+
 
 
         #endregion
