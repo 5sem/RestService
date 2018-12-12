@@ -391,7 +391,7 @@ namespace SpaendHjelmenREST
         public int UpdateDescription(User user, string id)
         {
             //TODO: billede
-            const string PutUserSql = "UPDATE Users SET Description = @Description, Privacy = @Privacy WHERE Id = @Id";
+            const string PutUserSql = "UPDATE Users SET Description = @Description, Privacy = @Privacy, UserName = @UserName WHERE Id = @Id";
             using (SqlConnection sqlConnection = new SqlConnection(GetConnectionString()))
             {
                sqlConnection.Open();
@@ -400,6 +400,7 @@ namespace SpaendHjelmenREST
                     sqlcommand.Parameters.AddWithValue("@Description", user.Description);
                     sqlcommand.Parameters.AddWithValue("@Privacy", user.Privacy);
                     sqlcommand.Parameters.AddWithValue("@Id", id);
+                    sqlcommand.Parameters.AddWithValue("@UserName", user.UserName);
                     sqlcommand.ExecuteNonQuery();
                     return 204;
                 }
